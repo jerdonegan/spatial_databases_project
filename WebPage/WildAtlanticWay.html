@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<!-- This is the TITLE of our webpage -->
+	<title>CS621 Project - Blue Flag Beaches on the Wild Atlantic Way</title>
+
+	<!-- You should not need to edit any of the lines below here until you pass the line which says 
+	<body> -->
+	
+	<!-- these three lines are for the Web Browser to figure out how to display this page
+	in the best way on your device screen -->
+	<meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<!-- And JQuery - one of the most important Javascript libraries on the Internet today -->
+	<script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+    
+
+	
+	<!-- Latest Bootstrap CSS -->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous">
+
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js" integrity="sha384-vFJXuSJphROIrBnz7yo7oB41mKfc8JzQZiCq4NCceLEaO4IHwicKwpJf9c9IpFgh" crossorigin="anonymous"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js" integrity="sha384-alpBpkh1PFOepccYVYDB4do5UnbKysX5WZXm3XxPqe5iKTfUKjNkCk9SaVuEZflJ" crossorigin="anonymous"></script>
+
+	<!-- This is the link to Leaflet for the CSS file and its Javascript file -->
+	
+	<link rel="stylesheet" href="https://unpkg.com/leaflet@1.2.0/dist/leaflet.css"
+   integrity="sha512-M2wvCLH6DSRazYeZRIm1JnYyh22purTM+FDB5CsyxtQJYeKq83arPe5wgbNmcFXGqiSH2XR8dT/fJISVA1r/zQ=="
+   crossorigin=""/>	
+	
+   <!-- Make sure you put this AFTER Leaflet's CSS -->
+	<script src="https://unpkg.com/leaflet@1.2.0/dist/leaflet.js"
+   integrity="sha512-lInM/apFSqyy1o6s89K4iQUKg6ppXEgsVxT35HbzUupEVRh2Eu9Wdl4tHj7dZO0s1uvplcYGmt3498TtHq+log=="
+   crossorigin=""></script>    
+    
+</head>
+
+<body>
+	  <div class="container-fluid">
+		 <div class="row"> 
+			 <!-- This is the start of your web page -->
+		
+				<h1  class="display-4">Blue Flag Beaches on the Wild Atlantic Way</h1>
+	
+	<div id="map" style="width: 100%; height: 800px"></div>
+
+	<script>
+<!-- Starting latitude and longitude of the center of the map -->
+<!-- Here is the CENTER coordinates of our map -->
+var LatitudeCenter = 53.439646;
+var LongitudeCenter = -8.014526;
+
+<!-- here is the starting zoom level of our map -->
+var ZoomLevel = 7;
+var mymap = L.map('map', {
+    center: [LatitudeCenter,  LongitudeCenter],
+    zoom: ZoomLevel
+});
+
+<!-- select our background layers - usually from the Leaflet Layer Providers website -->
+<!-- The first layer here will be the one which is 'switched on' when the user loads the page -->
+
+var Stamen_Watercolor = L.tileLayer('https://stamen-tiles-{s}.a.ssl.fastly.net/watercolor/{z}/{x}/{y}.{ext}', {
+	attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> &mdash; Map data &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+	subdomains: 'abcd',
+	minZoom: 1,
+	maxZoom: 16,
+	ext: 'png'
+});
+mymap.addLayer(Stamen_Watercolor);
+
+var Esri_WorldImagery = L.tileLayer('http://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+	attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'
+});
+<!--mymap.addLayer( Esri_WorldImagery); -->
+
+//Assign Styles for Choropleth Layers
+var CS1 = {
+    "color": "#31a354",
+    "weight": 1,
+    "opacity": 1,
+    "dashArray": 1,
+    "fillColor": "#ffffcc",
+    "fillOpacity": 0.4
+};
+var CS2 = {
+    "color": "#31a354",
+    "weight": 1,
+    "opacity": 1,
+    "dashArray": 1,
+    "fillColor": "#c2e699",
+    "fillOpacity": 0.4
+};
+        
+var CS3 = {
+    "color": "#31a354",
+    "weight": 1,
+    "opacity": 1,
+    "dashArray": 1,
+    "fillColor": "#78c679",
+    "fillOpacity": 0.4
+};        
+       
+var CS4 = {
+    "color": "#31a354",
+    "weight": 1,
+    "opacity": 1,
+    "dashArray": 1,
+    "fillColor": "#31a354",
+    "fillOpacity": 0.4
+};        
+        
+var CS5 = {
+    "color": "#31a354",
+    "weight": 1,
+    "opacity": 1,
+    "dashArray": 1,
+    "fillColor": "#006837",
+    "fillOpacity": 0.4
+}; 
+
+//Add Styles for Wild Atlantic Way Road Polygon.
+//One style for road another for dashed white lines on road.
+var CSRB = {
+    "weight": 7,
+    "color": "#000",
+    "fillOpacity": 1
+}; 
+
+var CSRW = {
+    "weight": .5,
+    "color": "#fff",
+	"dashArray": '10,7',
+    "fillOpacity": 1
+}; 
+
+//Add Blue Flag Beach Icon
+var blueFlagIcon = L.icon({
+    iconUrl: 'blue-flag-logo_edit.svg',
+    iconSize:     [20, 20],
+    iconAnchor:   [10, 10],
+    popupAnchor:  [0, -3]
+});
+
+//Add Non blue flag beach icon
+var beachIcon = L.icon({
+    iconUrl: 'blue-flag-logo_edit_2.svg',
+    iconSize:     [20, 20], 
+    iconAnchor:   [10, 10], 
+    popupAnchor:  [0, -3] 
+});
+
+//GeoJSON layer with beach location points   
+$.getJSON("./WAW_Beaches.geojson",  
+    function(data) {    
+        var WAWBeachesFile = L.geoJson(data,{
+			onEachFeature: on_click_beach,
+			//Add icons based on blue flag status
+			pointToLayer: function(feature, latlng) {
+				switch (feature.properties.blueflag) {
+					case 1: return L.marker(latlng, {icon: blueFlagIcon});
+					case 0: return L.marker(latlng, {icon: beachIcon});
+				}
+			}    
+		});
+        BFBLayer.addLayer(WAWBeachesFile).addTo(mymap); 
+	}
+  );
+var BFBLayer = L.layerGroup(); 
+
+//GoeJSON layer with counties polygons
+//Added with 3 different styles for the choropleth maps      
+$.getJSON("./counties.geojson",  
+    function(data) {
+        var CountiesFile = L.geoJson(data,{onEachFeature: on_click_county, style: CS1});
+        countiesLayer.addLayer(CountiesFile).addTo(mymap); 
+		var CountiesFile = L.geoJson(data,{onEachFeature: on_click_county, style: countyStyleB});
+        choroBeaches.addLayer(CountiesFile); 
+		var CountiesFile = L.geoJson(data,{onEachFeature: on_click_county, style: countyStyleBFB});
+        choroBFBeaches.addLayer(CountiesFile); 
+	}
+  );
+var countiesLayer = L.layerGroup();
+var choroBeaches = L.layerGroup();
+var choroBFBeaches = L.layerGroup();
+
+//GeoJSON of the Wild Atlantic Way road
+$.getJSON("./WAW_Road.geojson",  
+    function(data) {
+		var WAWRoadFileB = L.geoJson(data,{style:CSRB});
+        WAWLayerW.addLayer(WAWRoadFileB);
+		var WAWRoadFileW = L.geoJson(data,{style:CSRW});
+        WAWLayerB.addLayer(WAWRoadFileW); 		
+    }
+  );   
+var WAWLayerW = L.layerGroup(); 
+var WAWLayerB = L.layerGroup(); 
+//Combine Black and white layers for better layer control
+var road = new L.layerGroup([WAWLayerW, WAWLayerB]).addTo(mymap);
+
+<!-- Create the information for the layer switcher so users know which background layer is on or off -->
+var backgroundLayerNames = {"ESRI Aerial": Esri_WorldImagery, 
+							"Stamen Watercolor": Stamen_Watercolor};
+
+<!-- Create the information for the layer switcher so users know which foreground layer is on or off -->
+var overlayGeoLayerNames = {"Beaches":BFBLayer, 
+							"Wild Atlantic Way":road, 
+							"Counties":countiesLayer,
+							"Counties by Beaches":choroBeaches, 
+							"Counties by Blue Flag Beaches":choroBFBeaches};
+var options = {collapsed:false}
+<!-- This creates the layer switcher in the top corner of your map container -->
+<!-- This allows you to switch between the layers - turning them on or off -->
+L.control.layers(backgroundLayerNames,overlayGeoLayerNames, options).addTo(mymap);
+
+//Function to display beach information when clicked 
+// Displays weather beach has blue flag status.  
+function on_click_beach(feature, layer) {
+    if (feature.properties.blueflag === 1)    {
+		layer.bindPopup("<b> Beach: </b> " + feature.properties.BEACH + 
+						"<br /> <b> Blue Flag 2014: </b> Yes");
+	} 
+	else layer.bindPopup("<b> Beach: </b> " + feature.properties.BEACH + 
+						"<br /> <b> Blue Flag 2014: </b> No");
+}
+
+//Function to display county information when clicked
+//Displays county name, number of beaches on WAW and number of blue flag beaches ib 2014
+//For counties not on WAW just the county name is displayed.
+function on_click_county(feature, layer) {
+    if (feature.properties.beaches >= 1)    {
+		layer.bindPopup("<b> County: </b> " + feature.properties.name + 
+						"<br /> <b> Beaches on WAW: </b>" + feature.properties.beaches +
+						"<br /> <b> Blue Flag Beaches: </b>" + feature.properties.blueflag2014);
+	} 
+	else layer.bindPopup("<b> County: </b> " + feature.properties.name + "<br />");
+}
+
+//Function to assign styles to the counties based on number of beaches
+function countyStyleB(feature) {
+    if (feature.properties.beaches){
+        if ((feature.properties.beaches >= 1) && (feature.properties.beaches <= 4)) return CS2;
+        if ((feature.properties.beaches > 4) && (feature.properties.beaches <= 8)) return CS3;  
+        if ((feature.properties.beaches > 8) && (feature.properties.beaches <= 12)) return CS4;  
+        if ((feature.properties.beaches > 12) && (feature.properties.beaches <= 20)) return CS5;       
+    } 
+	else return CS1;
+} 
+//Function to assign styles to the counties based on number of blue flag beaches
+function countyStyleBFB(feature) {
+    if (feature.properties.blueflag2014){
+        if ((feature.properties.blueflag2014 >= 1) && (feature.properties.blueflag2014 <= 4)) return CS2;
+        if ((feature.properties.blueflag2014 > 4) && (feature.properties.blueflag2014 <= 8)) return CS3;  
+        if ((feature.properties.blueflag2014 > 8) && (feature.properties.blueflag2014 <= 12)) return CS4;  
+        if ((feature.properties.blueflag2014 > 12) && (feature.properties.blueflag2014 <= 20)) return CS5;       
+    } 
+	else return CS1;
+} 
+</script>	
+</div> <!-- end a row -->	
+</div> <!-- close the container -->
+</body>
+</html>
